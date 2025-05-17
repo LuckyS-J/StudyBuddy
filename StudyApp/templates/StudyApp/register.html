@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home page{% endblock %}
+
+{% block content %}
+
+<!-- Register form -->
+
+<form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="POST">
+  {% csrf_token %}
+
+  <div class="form-floating mb-3"> 
+    <input class="form-control" id="floatingInput" name="username"> 
+    <label for="floatingInput">Username</label> 
+  </div>
+  
+  <div class="form-floating mb-3"> 
+    <input type="email" class="form-control" id="floatingInput" name="email"> 
+    <label for="floatingInput">Email address</label> 
+  </div>
+
+  <div class="form-floating mb-3"> 
+    <input type="password" class="form-control" id="floatingPassword" name="password"> 
+    <label for="floatingPassword">Password</label> 
+  </div>
+
+    <button class="w-100 btn btn-lg btn-dark" type="submit">Sign up</button>
+  <hr class="my-4"> <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
+
+</form>
+
+{% endblock %}

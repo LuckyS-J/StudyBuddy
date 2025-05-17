@@ -12,15 +12,13 @@
 <body>
   <!-- Navbar -->
   <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom"> <a href="/"
-      class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"> <svg
-        class="bi me-2" width="40" height="32" aria-hidden="true">
-        <use xlink:href="#bootstrap"></use>
-      </svg> <span class="fs-4">Simple header</span> </a>
+      class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"> 
+     <span class="fs-2 fw-bold px-5">Your goals to achieve</span> 
     <ul class="nav nav-pills">
-      <li class="nav-item"><a href="{% url 'HomeView' %}" class="nav-link active" aria-current="page">Home</a></li>
-      <li class="nav-item"><a href="#" class="nav-link">Register</a></li>
-      <li class="nav-item"><a href="#" class="nav-link">Login</a></li>
-      <li class="nav-item"><a href="#" class="nav-link">Add</a></li>
+      <li class="nav-item me-2"><a href="{% url 'HomeView' %}" class="btn btn-dark" aria-current="page">Home</a></li>
+      <li class="nav-item me-2"><a href="{% url 'RegisterView' %}" class="btn btn-outline-dark">Register</a></li>
+      <li class="nav-item me-2"><a href="{% url 'LoginView' %}" class="btn btn-outline-dark">Login</a></li>
+      <li class="nav-item me-2"><a href="#" class="btn btn-outline-dark">Add</a></li>
     </ul>
   </header>
 

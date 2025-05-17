@@ -10,7 +10,9 @@ import datetime
 #TODO 1 Add profile model (profile_picture etc)
 
 class Users(models.Model):
-  user_name = models.CharField(max_length=100, unique=True, null=False)
+  username = models.CharField(max_length=100, unique=True)
+  email = models.EmailField(default="No email provided", unique=True)
+  password = models.CharField(max_length=128, default='')
   created_at = models.DateField(default=datetime.date.today)
 
   def __str__(self):
