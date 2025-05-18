@@ -1,26 +1,30 @@
 {% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Home page{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-
-<!-- Login form -->
-
-<form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="POST">
+<form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="POST" novalidate>
   {% csrf_token %}
-  <div class="form-floating mb-3"> 
-    <input type="email" class="form-control" id="floatingInput" name="email"> 
-    <label for="floatingInput">Email address</label> 
+  
+  <div class="form-floating mb-3 pt-5">
+    {{ form.username }}
+    <label for="floatingUsername">Username</label>
+    {% if form.username.errors %}
+      <div class="invalid-feedback d-block">
+        {{ form.username.errors.as_text|slice:"2:" }}
+      </div>
+    {% endif %}
+  </div>
+  
+  <div class="form-floating mb-3 pt-5">
+    {{ form.password }}
+    <label for="floatingPassword">Password</label>
+    {% if form.password.errors %}
+      <div class="invalid-feedback d-block">
+        {{ form.password.errors.as_text|slice:"2:" }}
+      </div>
+    {% endif %}
   </div>
 
-  <div class="form-floating mb-3"> 
-    <input type="password" class="form-control" id="floatingPassword" name="password"> 
-    <label for="floatingPassword">Password</label> 
-  </div>
-
-    <button class="w-100 btn btn-lg btn-dark" type="submit">Log in</button>
-
+  <button class="w-100 btn btn-lg btn-dark" type="submit">Log in</button>
 </form>
-
 {% endblock %}

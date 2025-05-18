@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 import datetime
 
 # Create your models here.
@@ -9,23 +10,14 @@ import datetime
 
 #TODO 1 Add profile model (profile_picture etc)
 
-class Users(models.Model):
-  username = models.CharField(max_length=100, unique=True)
-  email = models.EmailField(default="No email provided", unique=True)
-  password = models.CharField(max_length=128, default='')
-  created_at = models.DateField(default=datetime.date.today)
-
-  def __str__(self):
-     return self.user_name
-
-class Goals(models.Model):
+class Goal(models.Model):
   STATUS_CHOICES = [
         ('New', 'New'),
         ('In progress', 'In progress'),
         ('Done', 'Done'),
     ]
 
-  user = models.ForeignKey(Users, related_name='goals', null=False, on_delete=models.CASCADE)
+  user = models.ForeignKey(User, related_name='goals', null=False, on_delete=models.CASCADE)
   title = models.CharField(max_length=50, default='Untitled Goal')
   description = models.TextField(max_length=500)
   status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='New')
@@ -40,8 +32,8 @@ class Goals(models.Model):
   def __str__(self):
      return self.title
     
-class Tasks(models.Model):
-   goal = models.ForeignKey(Goals, related_name='tasks', null=False, on_delete=models.CASCADE)
+class Task(models.Model):
+   goal = models.ForeignKey(Goal, related_name='tasks', null=False, on_delete=models.CASCADE)
    title = models.CharField(max_length=50, default='Untitled Task')
    description = models.TextField(max_length=500)
    is_done = models.BooleanField(default=False)
@@ -50,9 +42,9 @@ class Tasks(models.Model):
    def __str__(self):
      return self.title
 
-class Notes(models.Model):
-   user = models.ForeignKey(Users, related_name='notes', null=False, on_delete=models.CASCADE)
-   goal = models.ForeignKey(Goals, related_name='notes', null=True, blank=True, on_delete=models.CASCADE)
+class Note(models.Model):
+   user = models.ForeignKey(User, related_name='notes', null=False, on_delete=models.CASCADE)
+   goal = models.ForeignKey(Goal, related_name='notes', null=True, blank=True, on_delete=models.CASCADE)
    text = models.TextField(max_length=500)
    created_at = models.DateField(default=datetime.date.today)
 

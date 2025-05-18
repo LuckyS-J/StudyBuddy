@@ -1,33 +1,52 @@
 {% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Home page{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
-
-<!-- Register form -->
-
-<form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="POST">
+<form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="POST" novalidate>
   {% csrf_token %}
-
-  <div class="form-floating mb-3"> 
-    <input class="form-control" id="floatingInput" name="username"> 
-    <label for="floatingInput">Username</label> 
+  
+  <div class="form-floating mb-3">
+    {{ form.username }}
+    <label for="floatingUsername">Username</label>
+    {% if form.username.errors %}
+      <div class="invalid-feedback d-block">
+        {{ form.username.errors.as_text|slice:"2:" }}
+      </div>
+    {% endif %}
   </div>
   
-  <div class="form-floating mb-3"> 
-    <input type="email" class="form-control" id="floatingInput" name="email"> 
-    <label for="floatingInput">Email address</label> 
+  <div class="form-floating mb-3">
+    {{ form.email }}
+    <label for="floatingEmail">Email address</label>
+    {% if form.email.errors %}
+      <div class="invalid-feedback d-block">
+        {{ form.email.errors.as_text|slice:"2:" }}
+      </div>
+    {% endif %}
+  </div>
+  
+  <div class="form-floating pt-5">
+    {{ form.password1 }}
+    <label for="id_password1">Password</label>
+    {% if form.password1.errors %}
+      <div class="invalid-feedback d-block">
+        {{ form.password1.errors.as_text|slice:"2:" }}
+      </div>
+    {% endif %}
   </div>
 
-  <div class="form-floating mb-3"> 
-    <input type="password" class="form-control" id="floatingPassword" name="password"> 
-    <label for="floatingPassword">Password</label> 
+  <div class="form-floating mb-3 py-5">
+    {{ form.password2 }}
+    <label for="id_password2">Confirm Password</label>
+    {% if form.password2.errors %}
+      <div class="invalid-feedback d-block">
+        {{ form.password2.errors.as_text|slice:"2:" }}
+      </div>
+    {% endif %}
   </div>
 
-    <button class="w-100 btn btn-lg btn-dark" type="submit">Sign up</button>
-  <hr class="my-4"> <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
-
+  <button class="w-100 btn btn-lg btn-dark" type="submit">Sign up</button>
+  <hr class="my-4">
+  <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
 </form>
-
 {% endblock %}

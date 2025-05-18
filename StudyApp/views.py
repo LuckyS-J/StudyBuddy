@@ -1,49 +1,49 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views import View
-from .models import Goals, Users
-from django.urls import reverse
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
+from .models import Goal
+from django.urls import reverse_lazy
+from .forms import RegisterForm
+from django.views.generic.edit import FormView
+from django.contrib.auth.views import LogoutView, LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
 class HomeView(View):
 
   def get(self, request):
-    goals = Goals.objects.all()
+    goals = Goal.objects.all()
     return render(request, 'StudyApp/index.html', {
       'goals':goals
     })
   
+class RegisterView(FormView):
+    template_name = 'StudyApp/register.html'
+    form_class = RegisterForm
+    success_url = reverse_lazy('LoginView')
 
-class RegisterView(View):
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
   
-  def get(self, request):
-    return render(request, 'StudyApp/register.html')
 
-  def post(self, request):
-        email = request.POST.get('email').strip()
-        password = request.POST.get('password').strip()
-        username = request.POST.get('username').strip()
+class MyLoginView(LoginView):
+    template_name = 'StudyApp/login.html'
+    redirect_authenticated_user = True
+    success_url = reverse_lazy('HomeView')
 
-        if not username or not password:
-            messages.error(request, "All fields are required!.")
-            return render(request, 'StudyApp/register.html')
-        
-        if Users.objects.filter(username=username).exists():
-            messages.error(request, "User with that email already exist!.")
-            return render(request, self.template_name)
-        
-        user = Users(username=username, email=email, password=password)
-        user.save()
-        messages.success(request, "Account created. You can login.")
-        return redirect(reverse('LoginView'))
+    def get_success_url(self):
+        return self.success_url
 
-class LoginView(View):
-  def get(self, request):
-    return render(request, 'StudyApp/login.html')
-  
-  def post(self, request):
-    email = request.POST['email']
-    password = request.POST['password']
-    return redirect(reverse('HomeView'))
+
+class MyLogoutView(LogoutView):
+    next_page = reverse_lazy('HomeView')
+
+
+class TestView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    redirect_field_name = 'next'
+
+    def get(self, request):
+        goals = Goal.objects.all()
+        return render(request, 'StudyApp/index.html', {'goals': goals})
