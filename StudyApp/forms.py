@@ -1,6 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from .models import Goal
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={
@@ -22,9 +23,6 @@ class RegisterForm(UserCreationForm):
 
 # Login form
 
-from django import forms
-from django.contrib.auth.forms import AuthenticationForm
-
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
@@ -36,3 +34,23 @@ class LoginForm(AuthenticationForm):
         'placeholder': 'Password',
         'id': 'floatingPassword'
     }))
+
+class AddGoalForm(forms.ModelForm):
+    deadline = forms.DateField(
+    widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+    )
+
+    labels = {
+        'title': 'Goal title',
+    }
+
+    class Meta:
+        model = Goal
+        fields = [
+            'title',
+            'description',
+            'status',
+            'deadline',
+        ]
+
+
