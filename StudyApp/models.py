@@ -7,8 +7,10 @@ import datetime
 
 # Create your models here.
 
-# TODO 1 Add profile model (profile_picture etc)
+# TODO 1 Add profile model (profile_picture etc)?
+# TODO 2 Add photos and store them to show in goals
 # TODO 4 REST API
+
 
 class Goal(models.Model):
     STATUS_CHOICES = [
@@ -24,6 +26,7 @@ class Goal(models.Model):
     status = models.CharField(
         max_length=15, choices=STATUS_CHOICES, default='New')
     deadline = models.DateField(null=True, blank=True)
+    bg_photo = models.ImageField(upload_to='photos/', null=True, blank=True)
     created_at = models.DateField(default=datetime.date.today)
 
     def clean(self):

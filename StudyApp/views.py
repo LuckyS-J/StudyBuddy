@@ -69,12 +69,20 @@ class AddGoalView(LoginRequiredMixin, FormView):
     form_class = AddGoalForm
     success_url = reverse_lazy('HomeView')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ('POST'):
+            kwargs.update({
+                'files': self.request.FILES,
+            })
+        return kwargs
+
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.user = self.request.user
 
         try:
-            obj.full_clean()  # To wywoła clean() z modelu
+            obj.full_clean()
         except ValidationError as e:
             for field, errors in e.message_dict.items():
                 for error in errors:
@@ -169,6 +177,7 @@ def toggle_task_done(request, task_id):
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
+
 @require_POST
 @login_required
 def delete_task(request, id):
@@ -180,6 +189,7 @@ def delete_task(request, id):
     task.delete()
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
+
 @require_POST
 @login_required
 def delete_note(request, id):
@@ -190,6 +200,7 @@ def delete_note(request, id):
 
     note.delete()
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
 
 @require_POST
 @login_required

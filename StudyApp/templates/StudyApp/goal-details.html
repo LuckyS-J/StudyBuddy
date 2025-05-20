@@ -14,20 +14,31 @@
     {% else %}
       <div class="container col-xxl-12 px-4 py-3 my-5 text-bg-success border rounded-5">
     {% endif %}
-        <div class="row flex-lg-row-reverse align-items-center g-5 py-3">
-          <div class="col-10 col-sm-8 col-lg-6"> <img src="{% static 'temp_photos/programming.png' %}"
-              class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" loading="lazy"> </div>
-          <div class="col-lg-6">
-            <h1 class="display-12 fw-bold lh-1 mb-3">{{ goal.title }}</h1>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start py-3"> 
-              <a href="{% url 'DetailView' id=goal.id %}" class="btn btn-dark btn-lg px-4 me-md-2">Read more</a>
-              <form action="{% url 'DeleteView' id=goal.id %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger btn-lg px-4">Delete</button>
-              </form>
-            </div>
+      <div class="row align-items-center g-5 py-3">
+        <div class="col-lg-6">
+          <h1 class="display-12 fw-bold lh-1 mb-3">{{ goal.title }}</h1>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start py-3"> 
           </div>
         </div>
+        
+        {% if goal.bg_photo %}
+          <div class="col-10 col-sm-8 col-lg-6">
+            <img src="{{ goal.bg_photo.url }}"
+                 class="d-block mx-lg-auto img-fluid ms-lg-4"
+                 style="max-width: 250px;"
+                 alt=""
+                 loading="lazy">
+          </div>
+        {% else %}
+          <div class="col-10 col-sm-8 col-lg-6">
+            <img src="{% static 'temp_photos/def_img.jpg' %}"
+                 class="d-block mx-lg-auto img-fluid ms-lg-4"
+                 style="max-width: 250px;"
+                 alt="Default photo"
+                 loading="lazy">
+          </div>
+        {% endif %}
+      </div>
       </div>
 
 <!-- Dates Area -->

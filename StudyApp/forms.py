@@ -53,6 +53,7 @@ class AddGoalForm(forms.ModelForm):
             'description',
             'status',
             'deadline',
+            'bg_photo',
         ]
 
 
