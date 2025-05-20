@@ -16,7 +16,7 @@
         <div class="col-lg-6">
           <h1 class="display-12 fw-bold lh-1 mb-3">{{ goal.title }}</h1>
           <div class="d-grid gap-2 d-md-flex justify-content-md-start py-3"> 
-            <a href="#" class="btn btn-dark btn-lg px-4 me-md-2">Read more</a>
+            <a href="{% url 'DetailView' id=goal.id %}" class="btn btn-dark btn-lg px-4 me-md-2">Read more</a>
             <form action="{% url 'DeleteView' id=goal.id %}" method="post" style="display:inline;">
               {% csrf_token %}
               <button type="submit" class="btn btn-danger btn-lg px-4">Delete</button>

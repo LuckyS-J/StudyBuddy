@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Goal
+from .models import Goal, Task, Note
+
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={
@@ -9,7 +10,7 @@ class RegisterForm(UserCreationForm):
         'placeholder': 'Email address',
         'id': 'floatingEmail'
     }))
-    
+
     class Meta:
         model = User
         fields = ("username", "email", "password1", "password2")
@@ -23,6 +24,7 @@ class RegisterForm(UserCreationForm):
 
 # Login form
 
+
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
@@ -35,9 +37,11 @@ class LoginForm(AuthenticationForm):
         'id': 'floatingPassword'
     }))
 
+
 class AddGoalForm(forms.ModelForm):
     deadline = forms.DateField(
-    widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        widget=forms.DateInput(
+            attrs={'type': 'date', 'class': 'form-control'}),
     )
 
     labels = {
@@ -53,4 +57,28 @@ class AddGoalForm(forms.ModelForm):
             'deadline',
         ]
 
+ # -----------------------------------------------------#
 
+
+class AddTaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = [
+            'title',
+            'description',
+        ]
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'style': 'height: 100px'}),
+        }
+
+
+class AddNoteForm(forms.ModelForm):
+    class Meta:
+        model = Note
+        fields = [
+            'text',
+        ]
+        widgets = {
+            'text': forms.Textarea(attrs={'class': 'form-control', 'placeholder': ' '}),
+        }

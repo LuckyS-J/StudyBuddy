@@ -9,4 +9,5 @@ urlpatterns = [
     path('test/', views.TestView.as_view(), name='TestView'),
     path('add/', views.AddGoalView.as_view(), name='AddView'),
     path('delete/<int:id>/', views.DeleteView.as_view(), name='DeleteView'),
+    path('details/<int:id>/', views.MyDetailView.as_view(), name='DetailView'),
 ]

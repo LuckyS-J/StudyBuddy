@@ -2,23 +2,27 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from .models import Goal
 from django.urls import reverse_lazy
-from .forms import RegisterForm, LoginForm, AddGoalForm
+from .forms import RegisterForm, LoginForm, AddGoalForm, AddTaskForm, AddNoteForm
 from django.views.generic.edit import FormView
 from django.contrib.auth.views import LogoutView, LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404, HttpResponseForbidden
+from django.http import HttpResponseForbidden
 
 # Create your views here.
 
+
 class HomeView(View):
 
-  def get(self, request):
-    goals = Goal.objects.all()
-    return render(request, 'StudyApp/index.html', {
-      'goals':goals
-    })
-  
-  
+    def get(self, request):
+        if request.user.is_authenticated:
+            goals = Goal.objects.filter(user=request.user)
+        else:
+            goals = None
+        return render(request, 'StudyApp/index.html', {
+            'goals': goals
+        })
+
+
 class RegisterView(FormView):
     template_name = 'StudyApp/register.html'
     form_class = RegisterForm
@@ -27,7 +31,7 @@ class RegisterView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
-  
+
 
 class MyLoginView(LoginView):
     template_name = 'StudyApp/login.html'
@@ -56,7 +60,7 @@ class AddGoalView(LoginRequiredMixin, FormView):
 
     login_url = '/login/'
     redirect_field_name = 'next'
-    
+
     template_name = 'StudyApp/add.html'
     form_class = AddGoalForm
     success_url = reverse_lazy('HomeView')
@@ -66,7 +70,7 @@ class AddGoalView(LoginRequiredMixin, FormView):
         obj.user = self.request.user
         obj.save()
         return super().form_valid(form)
-    
+
 
 class DeleteView(LoginRequiredMixin, View):
     def post(self, request, id):
@@ -77,4 +81,59 @@ class DeleteView(LoginRequiredMixin, View):
 
         goal.delete()
         return redirect('HomeView')
-        
+
+
+class MyDetailView(LoginRequiredMixin, View):
+    def get(self, request, id):
+        goal_to_show = get_object_or_404(Goal, id=id)
+
+        if goal_to_show.user != request.user:
+            return HttpResponseForbidden("You do not have permission to show this goal.")
+
+        tasks = goal_to_show.tasks.all()
+        notes = goal_to_show.notes.all()
+        task_form = AddTaskForm()
+        note_form = AddNoteForm()
+
+        return render(request, 'StudyApp/goal-details.html', {
+            'goal': goal_to_show,
+            'tasks': tasks,
+            'notes': notes,
+            'task_form': task_form,
+            'note_form': note_form,
+        })
+
+    def post(self, request, id):
+        goal = get_object_or_404(Goal, id=id)
+
+        if goal.user != request.user:
+            return HttpResponseForbidden("You do not have permission to modify this goal.")
+
+        if 'submit_task' in request.POST:
+            task_form = AddTaskForm(request.POST)
+            note_form = AddNoteForm()
+            if task_form.is_valid():
+                task = task_form.save(commit=False)
+                task.goal = goal
+                task.save()
+                return redirect(request.path)
+
+        elif 'submit_note' in request.POST:
+            note_form = AddNoteForm(request.POST)
+            task_form = AddTaskForm()
+            if note_form.is_valid():
+                note = note_form.save(commit=False)
+                note.goal = goal
+                note.save()
+                return redirect(request.path)
+
+        tasks = goal.tasks.all()
+        notes = goal.notes.all()
+
+        return render(request, 'StudyApp/goal-details.html', {
+            'goal': goal,
+            'tasks': tasks,
+            'notes': notes,
+            'task_form': task_form,
+            'note_form': note_form,
+        })
