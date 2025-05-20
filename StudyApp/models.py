@@ -8,8 +8,6 @@ import datetime
 # Create your models here.
 
 
-# TODO 1 Add profile model (profile_picture etc)
-
 class Goal(models.Model):
     STATUS_CHOICES = [
         ('New', 'New'),

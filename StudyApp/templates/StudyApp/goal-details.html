@@ -16,23 +16,40 @@
 </div>
 
 <!-- Tasks Area -->
- {% if tasks %}
+{% if tasks %}
   {% for task in tasks %}
     <div class="my-3 p-3 bg-body rounded shadow-sm px-5">
-      <div class="d-flex text-body-secondary pt-3" style="background-color: #c1717a;">
-        <p class="pb-3 mb-0 small lh-sm"> <strong class="d-block text-gray-dark fs-5">{{ task.title }}</strong>
+      <div class="d-flex justify-content-between align-items-center text-body-secondary pt-3 
+                  {% if task.is_done %}
+                    border-start border-4 border-success bg-success-subtle
+                  {% else %}
+                    border-start border-4 border-danger bg-danger-subtle
+                  {% endif %} ps-3">
+          
+        <p class="pb-3 mb-0 small lh-sm me-3">
+          <strong class="d-block fs-5">{{ task.title }}</strong>
           {{ task.description }}
         </p>
+
+        <form action="{% url 'toggle_task_done' task.id %}" method="post"
+              class="form-check mb-0 d-flex flex-column align-items-center"
+              style="width: max-content; min-width: 50px;">
+          {% csrf_token %}
+          <label class="form-check-label mb-1 text-center" for="done-{{ task.id }}" style="white-space: nowrap;">
+            done?
+          </label>
+          <input class="form-check-input mx-auto" type="checkbox" id="done-{{ task.id }}"
+                {% if task.is_done %}checked{% endif %} onChange="this.form.submit()">
+        </form>
+
       </div>
     </div>
-   {% endfor %}
- {% else %}
-
+  {% endfor %}
+{% else %}
     <div class="my-3 p-3 bg-body rounded shadow-sm px-5">
-      <h3 class="border-bottom pb-2 mb-0">You didn't add any task yet!</h3>
+      <h3 class="border-bottom pb-2 mb-0">You didn't add any tasks yet!</h3>
     </div>
-
-  {% endif %}
+{% endif %}
 
 <!-- Notes area -->
  {% if notes %}

@@ -22,8 +22,6 @@ class RegisterForm(UserCreationForm):
             }),
         }
 
-# Login form
-
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
@@ -56,8 +54,6 @@ class AddGoalForm(forms.ModelForm):
             'status',
             'deadline',
         ]
-
- # -----------------------------------------------------#
 
 
 class AddTaskForm(forms.ModelForm):

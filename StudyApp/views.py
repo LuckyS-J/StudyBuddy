@@ -1,12 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from .models import Goal
+from .models import Goal, Task
 from django.urls import reverse_lazy
 from .forms import RegisterForm, LoginForm, AddGoalForm, AddTaskForm, AddNoteForm
 from django.views.generic.edit import FormView
 from django.contrib.auth.views import LogoutView, LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseForbidden
+from django.core.exceptions import ValidationError
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -68,6 +71,15 @@ class AddGoalView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.user = self.request.user
+
+        try:
+            obj.full_clean()  # To wywoła clean() z modelu
+        except ValidationError as e:
+            for field, errors in e.message_dict.items():
+                for error in errors:
+                    form.add_error(field, error)
+            return self.form_invalid(form)
+
         obj.save()
         return super().form_valid(form)
 
@@ -137,3 +149,17 @@ class MyDetailView(LoginRequiredMixin, View):
             'task_form': task_form,
             'note_form': note_form,
         })
+
+
+@require_POST
+@login_required
+def toggle_task_done(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    if task.goal.user != request.user:
+        return HttpResponseForbidden("You do not have permission to modify this task.")
+
+    task.is_done = not task.is_done
+    task.save()
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
