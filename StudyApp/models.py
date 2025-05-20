@@ -7,6 +7,8 @@ import datetime
 
 # Create your models here.
 
+# TODO 1 Add profile model (profile_picture etc)
+# TODO 4 REST API
 
 class Goal(models.Model):
     STATUS_CHOICES = [

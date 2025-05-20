@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from .models import Goal, Task
+from .models import Goal, Task, Note
 from django.urls import reverse_lazy
 from .forms import RegisterForm, LoginForm, AddGoalForm, AddTaskForm, AddNoteForm
 from django.views.generic.edit import FormView
@@ -10,6 +10,7 @@ from django.http import HttpResponseForbidden
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+import datetime
 
 # Create your views here.
 
@@ -98,6 +99,7 @@ class DeleteView(LoginRequiredMixin, View):
 class MyDetailView(LoginRequiredMixin, View):
     def get(self, request, id):
         goal_to_show = get_object_or_404(Goal, id=id)
+        today = datetime.date.today
 
         if goal_to_show.user != request.user:
             return HttpResponseForbidden("You do not have permission to show this goal.")
@@ -113,10 +115,12 @@ class MyDetailView(LoginRequiredMixin, View):
             'notes': notes,
             'task_form': task_form,
             'note_form': note_form,
+            'today': today
         })
 
     def post(self, request, id):
         goal = get_object_or_404(Goal, id=id)
+        today = datetime.date.today
 
         if goal.user != request.user:
             return HttpResponseForbidden("You do not have permission to modify this goal.")
@@ -148,6 +152,7 @@ class MyDetailView(LoginRequiredMixin, View):
             'notes': notes,
             'task_form': task_form,
             'note_form': note_form,
+            'today': today
         })
 
 
@@ -162,4 +167,40 @@ def toggle_task_done(request, task_id):
     task.is_done = not task.is_done
     task.save()
 
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@require_POST
+@login_required
+def delete_task(request, id):
+    task = get_object_or_404(Task, id=id)
+
+    if task.goal.user != request.user:
+        return HttpResponseForbidden("You do not have permission to modify this task.")
+
+    task.delete()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@require_POST
+@login_required
+def delete_note(request, id):
+    note = get_object_or_404(Note, id=id)
+
+    if note.goal.user != request.user:
+        return HttpResponseForbidden("You do not have permission to modify this note.")
+
+    note.delete()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@require_POST
+@login_required
+def change_goal_status(request, id):
+    goal = get_object_or_404(Goal, id=id)
+    new_status = request.POST.get('status')
+
+    if goal.user != request.user:
+        return HttpResponseForbidden("You do not have permission to modify this goal.")
+
+    if new_status in dict(Goal.STATUS_CHOICES):
+        goal.status = new_status
+        goal.save()
     return redirect(request.META.get('HTTP_REFERER', '/'))

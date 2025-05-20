@@ -5,46 +5,95 @@
 
 {% block content %}
 
-<div class="container col-xxl-12 px-4 py-3 my-5 text-bg-success border rounded-5">
-  <div class="row flex-lg-row-reverse align-items-center g-5 py-3">
-    <div class="col-10 col-sm-8 col-lg-6"> <img src="{% static 'temp_photos/programming.png' %}"
-        class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" loading="lazy"> </div>
-    <div class="col-lg-6">
-      <h1 class="display-12 fw-bold lh-1 mb-3">{{goal.title}}</h1>
-    </div>
-  </div>
+<!-- Show goal -->
+
+    {% if goal.status == 'New' %}
+      <div class="container col-xxl-12 px-4 py-3 my-5 text-bg-info border rounded-5">
+    {% elif goal.status == 'In progress' %}
+      <div class="container col-xxl-12 px-4 py-3 my-5 text-bg-warning border rounded-5">
+    {% else %}
+      <div class="container col-xxl-12 px-4 py-3 my-5 text-bg-success border rounded-5">
+    {% endif %}
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-3">
+          <div class="col-10 col-sm-8 col-lg-6"> <img src="{% static 'temp_photos/programming.png' %}"
+              class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" loading="lazy"> </div>
+          <div class="col-lg-6">
+            <h1 class="display-12 fw-bold lh-1 mb-3">{{ goal.title }}</h1>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start py-3"> 
+              <a href="{% url 'DetailView' id=goal.id %}" class="btn btn-dark btn-lg px-4 me-md-2">Read more</a>
+              <form action="{% url 'DeleteView' id=goal.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-lg px-4">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<!-- Dates Area -->
+ 
+<div class="container my-5"> 
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb breadcrumb-custom overflow-hidden bg-body-tertiary border rounded-3 d-flex justify-content-between w-100 text-center align-items-center py-3 px-4 mb-0">
+      <li class="breadcrumb-item flex-fill text-start m-0">
+        <span class="link-body-emphasis fw-semibold">Deadline: {{ goal.deadline }}</span>
+      </li>
+      <li class="breadcrumb-item flex-fill text-center m-0">
+        <form method="post" action="{% url 'ChangeGoalStatus' goal.id %}">
+          {% csrf_token %}
+          <label for="status-select" class="link-body-emphasis fw-semibold me-2">Status:</label>
+          <select name="status" id="status-select" class="form-select d-inline w-auto" onchange="this.form.submit()">
+            {% for key, value in goal.STATUS_CHOICES %}
+              <option value="{{ key }}" {% if goal.status == key %}selected{% endif %}>
+                {{ value }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+      </li>
+      <li class="breadcrumb-item flex-fill text-end m-0">
+        <span class="link-body-emphasis fw-semibold">Today's date: {{today}}</span>
+      </li>
+    </ol>
+  </nav>
 </div>
 
 <!-- Tasks Area -->
 {% if tasks %}
   {% for task in tasks %}
-    <div class="my-3 p-3 bg-body rounded shadow-sm px-5">
-      <div class="d-flex justify-content-between align-items-center text-body-secondary pt-3 
-                  {% if task.is_done %}
-                    border-start border-4 border-success bg-success-subtle
-                  {% else %}
-                    border-start border-4 border-danger bg-danger-subtle
-                  {% endif %} ps-3">
-          
-        <p class="pb-3 mb-0 small lh-sm me-3">
-          <strong class="d-block fs-5">{{ task.title }}</strong>
-          {{ task.description }}
-        </p>
+<div class="my-3 p-5 bg-body rounded shadow-sm">
+  <div class="d-flex justify-content-between align-items-center text-body-secondary pt-3
+              {% if task.is_done %}
+                border-start border-4 border-success bg-success-subtle
+              {% else %}
+                border-start border-4 border-danger bg-danger-subtle
+              {% endif %} ps-3">
 
-        <form action="{% url 'toggle_task_done' task.id %}" method="post"
-              class="form-check mb-0 d-flex flex-column align-items-center"
-              style="width: max-content; min-width: 50px;">
-          {% csrf_token %}
-          <label class="form-check-label mb-1 text-center" for="done-{{ task.id }}" style="white-space: nowrap;">
-            done?
-          </label>
-          <input class="form-check-input mx-auto" type="checkbox" id="done-{{ task.id }}"
-                {% if task.is_done %}checked{% endif %} onChange="this.form.submit()">
-        </form>
+    <p class="pb-3 mb-0 small lh-sm me-3">
+      <strong class="d-block fs-5">{{ task.title }}</strong>
+      {{ task.description }}
+    </p>
 
-      </div>
-    </div>
+    <form action="{% url 'toggle_task_done' task.id %}" method="post"
+          class="form-check mb-0 d-flex flex-column align-items-center"
+          style="width: max-content; min-width: 50px;">
+      {% csrf_token %}
+      <label class="form-check-label mb-1 text-center" for="done-{{ task.id }}" style="white-space: nowrap;">
+        done?
+      </label>
+      <input class="form-check-input mx-auto" type="checkbox" id="done-{{ task.id }}"
+            {% if task.is_done %}checked{% endif %} onChange="this.form.submit()">
+    </form>
+  </div>
+
+  <form action="{% url 'DeleteTask' id=task.id %}" method="post" class="mt-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-sm px-4">Delete</button>
+  </form>
+</div>
+
   {% endfor %}
+
 {% else %}
     <div class="my-3 p-3 bg-body rounded shadow-sm px-5">
       <h3 class="border-bottom pb-2 mb-0">You didn't add any tasks yet!</h3>
@@ -54,9 +103,17 @@
 <!-- Notes area -->
  {% if notes %}
   {% for note in notes %}
-    <div class="p-4 mb-3 bg-body-tertiary rounded my-5 mx-5">
-      <p class="mb-0">{{ note.text }}</p>
-    </div>
+<div class="m-5">
+  <div class="p-4 mb-3 bg-body-tertiary rounded">
+    <p class="mb-0">{{ note.text }}</p>
+  </div>
+
+  <form action="{% url 'DeleteNote' id=note.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-sm px-4">Delete</button>
+  </form>
+</div>
+    
   {% endfor %}
   {% else %}
 
@@ -66,6 +123,8 @@
 
   {% endif %}
 
+
+<!-- Forms Area -->
 <hr style="border-top: 3px solid #333; margin: 3rem 0;">
 
 <div class="px-5">

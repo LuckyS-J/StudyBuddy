@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Error occured...{% endblock %}
+
+{% block content %}
+<h1>Seems like you landed in some strange place...</h1>
+<a href="{% url 'HomeView' %}">Please click at me to return to home page</a>
+{% endblock %}
